@@ -62,15 +62,17 @@ namespace IdnoPlugins\Pingback {
                 {
                     if ($xml = XmlParser::unserialise($post)) {
 
-                        // Get source and target url
+			// Get source and target url
                         $source = $xml->children[1]->children[0]->children[0]->children[0]->content;
                         $target = $xml->children[1]->children[1]->children[0]->children[0]->content;
 
+			\Idno\Core\site()->logging->log("Pingback: Pingback recieved, source = $source, target = $target", LOGLEVEL_DEBUG);
+			
                         // Do we have a source and target URL?
                         if (!empty($source) && !empty($target)) {
                             // Get the page handler for target
                             if ($page = \Idno\Core\site()->getPageHandler($target)) {
-                                if ($source_content = \Idno\Core\Webmention::getPageContent($source)) {
+                                if ($source_content = \Idno\Core\Webservice::get($source)) {
 
                                     if (substr_count($source_content['content'],$target) || $source_content['response'] == 410) {
                                         $source_mf2 = \Idno\Core\Webmention::parseContent($source_content['content']);
@@ -106,7 +108,7 @@ namespace IdnoPlugins\Pingback {
                     throw new \Exception('No POST data');
 
             } catch (\Exception $e) {
-                error_log($e->getMessage());
+		\Idno\Core\site()->logging->log("Pingback: " . $e->getMessage(), LOGLEVEL_ERROR);
                 $this->error($e->getMessage());
                 exit;
             }
