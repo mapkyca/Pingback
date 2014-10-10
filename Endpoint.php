@@ -87,8 +87,8 @@ namespace IdnoPlugins\Pingback {
                                             throw new \Exception('This is not pingable.', 49);
 
                                     } else {
+					\Idno\Core\site()->logging->log("Pingback: No link from $source to $target", LOGLEVEL_DEBUG);
                                         throw new \Exception('The source URI does not contain a link to the target URI.', 17);
-                                        error_log('No link from ' . $source . ' to ' . $target);
                                     }
 
                                 }
